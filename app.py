@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 
 class PushupDetector:
-    def __init__(self, model_path='pushup_model.h5'):
+    def __init__(self, model_path='best_pushup_model.h5'):
         self.model = tf.keras.models.load_model(model_path)
         self.pushup_count = 0
         self.position = "up"
