@@ -24,7 +24,7 @@ class PushupDetector:
         processed_frame = self.preprocess_frame(frame)
         
         prediction = self.model.predict(np.expand_dims(processed_frame, axis=0))[0]
-        position = "up" if prediction[0] > prediction[1] else "down"
+        position = "down" if prediction[0] > prediction[1] else "up"
         confidence = max(prediction)
 
         if confidence > self.confidence_threshold:
