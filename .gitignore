@@ -1,0 +1,30 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Flask specific
+instance/
+.webassets-cache
+
+# macOS system files
+.DS_Store
+
+# IDE/editor specific files
+.vscode/
+.idea/
+
+# Environment variables (if any)
+.env
+
+# Python packaging
+*.egg
+*.egg-info
+dist/
+build/
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
