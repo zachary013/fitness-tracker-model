@@ -1,10 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Pushup Counter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push-up Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-text {
+            background: linear-gradient(45deg, #6d28d9, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
-<body>
-    <h1>Pushup Counter</h1>
-    <img src="{{ url_for('video_feed') }}">
+<body class="bg-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold gradient-text mb-2">Push-up Detector</h1>
+            <p class="text-gray-600 text-lg">Real-time form analysis with AI</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="rounded-2xl overflow-hidden bg-white shadow-lg border-2 border-purple-100">
+                    <img src="{{ url_for('video_feed') }}" class="w-full">
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Push-up Count</h3>
+                        <div class="bg-purple-100 p-2 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="pushup-count">0</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Current Position</h3>
+                        <div class="bg-purple-100 p-2 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="position">Up</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Form Quality</h3>
+                        <div class="bg-purple-100 p-2 rounded-full">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="form-quality">Good</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            fetch('/get_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('pushup-count').textContent = data.count;
+                    document.getElementById('position').textContent = 
+                        data.position.charAt(0).toUpperCase() + data.position.slice(1);
+                    document.getElementById('form-quality').textContent = data.form;
+                    
+                    // Add animation class when count changes
+                    if (data.count !== parseInt(document.getElementById('pushup-count').textContent)) {
+                        document.getElementById('pushup-count').classList.add('scale-110');
+                        setTimeout(() => {
+                            document.getElementById('pushup-count').classList.remove('scale-110');
+                        }, 200);
+                    }
+                });
+        }
+
+        // Update stats every 200ms for smooth real-time updates
+        setInterval(updateStats, 200);
+    </script>
 </body>
 </html>
