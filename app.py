@@ -11,7 +11,7 @@ from flask import Flask, render_template, Response, jsonify
 import atexit
 from mqtt_config import MQTT_CONFIG, BLYNK_CONFIG
 
-# Flask setup
+# Flask setup  
 app = Flask(__name__)
 
 # Blynk setup
