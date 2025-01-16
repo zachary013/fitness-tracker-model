@@ -1,10 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Pushup Counter</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Detector</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-text {
+            background: linear-gradient(45deg, #6d28d9, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+            transition: transform 0.2s;
+        }
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
-<body>
-    <h1>Pushup Counter</h1>
-    <img src="{{ url_for('video_feed') }}">
+<body class="bg-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold gradient-text mb-2">Exercise Detector</h1>
+            <p class="text-gray-600 text-lg">Real-time exercise tracking with AI</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="rounded-2xl overflow-hidden bg-white shadow-lg border-2 border-purple-100">
+                    <img src="{{ url_for('video_feed') }}" class="w-full">
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Jumping Jacks Count</h3>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="jumping-jacks-count">0</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Bicep Curls Count</h3>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="bicep-curls-count">0</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Plank Count</h3>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="plank-count">0</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Lunges Count</h3>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="lunges-count">0</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-purple-800 font-semibold text-xl">Push-ups Count</h3>
+                    </div>
+                    <p class="text-4xl font-bold text-purple-900" id="pushups-count">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            fetch('/get_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('jumping-jacks-count').textContent = data.jumping_jacks || 0;
+                    document.getElementById('bicep-curls-count').textContent = data.bicep_curls || 0;
+                    document.getElementById('plank-count').textContent = data.plank || 0;
+                    document.getElementById('lunges-count').textContent = data.lunges || 0;
+                    document.getElementById('pushups-count').textContent = data.pushups || 0;
+                });
+        }
+
+        // Update stats every 200ms for smooth real-time updates
+        setInterval(updateStats, 200);
+    </script>
 </body>
 </html>

@@ -5,12 +5,18 @@ import numpy as np
 
 app = Flask(__name__)
 
-class PushupDetector:
-    def __init__(self, model_path='best_pushup_model.h5'):
+class ExerciseDetector:
+    def __init__(self, model_path='exercise_model.h5'):
         self.model = tf.keras.models.load_model(model_path)
-        self.pushup_count = 0
-        self.position = "up"
-        self.prev_prediction = "up"
+        self.exercise_counts = {  # Counter for each exercise
+            "jumping_jack": 0,
+            "bicep_curl": 0,
+            "plank": 0,
+            "lunge": 0,
+            "pushup": 0,
+        }
+        self.current_exercise = None
+        self.prev_exercise = None
         self.confidence_threshold = 0.7
 
     def preprocess_frame(self, frame):
@@ -20,29 +26,39 @@ class PushupDetector:
 
     def process_frame(self, frame):
         original_frame = frame.copy()
-        
+
         processed_frame = self.preprocess_frame(frame)
-        
         prediction = self.model.predict(np.expand_dims(processed_frame, axis=0))[0]
-        position = "down" if prediction[0] > prediction[1] else "up"
-        confidence = max(prediction)
+        max_idx = np.argmax(prediction)
+        confidence = prediction[max_idx]
+
+        # Map index to exercise label
+        exercises = list(self.exercise_counts.keys())
+        detected_exercise = exercises[max_idx]
 
         if confidence > self.confidence_threshold:
-            if position == "down" and self.prev_prediction == "up":
-                self.pushup_count += 1
-            self.prev_prediction = position
+            self.current_exercise = detected_exercise
+            if self.current_exercise != self.prev_exercise:
+                self.exercise_counts[self.current_exercise] += 1
+            self.prev_exercise = self.current_exercise
 
-        cv2.putText(original_frame, f'Count: {self.pushup_count}', (10, 30),
-                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(original_frame, f'Position: {position}', (10, 70),
-                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(original_frame, f'Confidence: {confidence:.2f}', (10, 110),
-                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # Display information on the frame
+        cv2.putText(original_frame, f'Exercise: {self.current_exercise}', (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(original_frame, f'Confidence: {confidence:.2f}', (10, 70),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        # Display counters for all exercises
+        y_offset = 110
+        for exercise, count in self.exercise_counts.items():
+            cv2.putText(original_frame, f'{exercise}: {count}', (10, y_offset),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            y_offset += 40
 
         return original_frame
 
-detector = PushupDetector()
-camera = cv2.VideoCapture(0)  # This opens the default webcam (usually the built-in camera)
+detector = ExerciseDetector()
+camera = cv2.VideoCapture(0)
 
 def generate_frames():
     while True:
