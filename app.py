@@ -17,7 +17,7 @@ class ExerciseDetector:
     def __init__(self, model_path='exercise_model.h5'):
         self.model = tf.keras.models.load_model(model_path)
         self.current_exercise = None
-        self.confidence_threshold = 0.7
+        self.confidence_threshold = 0.9
         self._lock = Lock()
 
         # Motion detection parameters

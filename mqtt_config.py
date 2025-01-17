@@ -13,12 +13,12 @@ MQTT_CONFIG = {
     'keepalive': 60
 }
 
-# Blynk Configuration
-BLYNK_CONFIG = {
-    'token': '3uBmJ6MJQInML8hKFY1jgwlM9I99D0iC',
-    'pins': {
-        'pushup_count': 0,  # V0
-        'position': 1,      # V1
-        'form_quality': 2   # V2
-    }
-}
+# # Blynk Configuration
+# BLYNK_CONFIG = {
+#     'token': '3uBmJ6MJQInML8hKFY1jgwlM9I99D0iC',
+#     'pins': {
+#         'pushup_count': 0,  # V0
+#         'position': 1,      # V1
+#         'form_quality': 2   # V2
+#     }
+# }
