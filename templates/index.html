@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Push-up Detector</title>
+    <title>Exercise Detector</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .gradient-text {
@@ -11,91 +11,147 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .stats-card {
+        .status-card {
             background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
             transition: transform 0.2s;
         }
-        .stats-card:hover {
+        .status-card:hover {
             transform: translateY(-2px);
+        }
+        .control-button {
+            transition: all 0.2s;
+        }
+        .control-button:hover {
+            transform: translateY(-1px);
+        }
+        .control-button:active {
+            transform: translateY(1px);
+        }
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .video-feed {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
         }
     </style>
 </head>
-<body class="bg-white min-h-screen">
+<body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-5xl font-bold gradient-text mb-2">Push-up Detector</h1>
-            <p class="text-gray-600 text-lg">Real-time form analysis with AI</p>
+            <h1 class="text-5xl font-bold gradient-text mb-2">Exercise Detector</h1>
+            <p class="text-gray-600 text-lg">Real-time exercise tracking with AI</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2">
-                <div class="rounded-2xl overflow-hidden bg-white shadow-lg border-2 border-purple-100">
-                    <img src="{{ url_for('video_feed') }}" class="w-full">
-                </div>
+        <!-- Control buttons -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="startBtn" class="control-button bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-purple-700">
+                Start Detection
+            </button>
+            <button id="stopBtn" class="control-button bg-red-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-red-700" disabled>
+                Stop Detection
+            </button>
+        </div>
+
+        <!-- Video feed and status section -->
+        <div class="max-w-4xl mx-auto">
+            <!-- Video feed -->
+            <div class="rounded-2xl overflow-hidden bg-white shadow-lg border-2 border-purple-100 mb-6">
+                <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Exercise Detection Feed">
             </div>
 
-            <div class="space-y-6">
-                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-purple-800 font-semibold text-xl">Push-up Count</h3>
-                        <div class="bg-purple-100 p-2 rounded-full">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </div>
+            <!-- Status Bar -->
+            <div class="status-card rounded-xl p-6 shadow-lg border border-purple-200 bg-white">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Current Exercise Status -->
+                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
+                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Current Exercise</h3>
+                        <p id="current-exercise" class="status-value text-2xl font-bold text-purple-900">None</p>
                     </div>
-                    <p class="text-4xl font-bold text-purple-900" id="pushup-count">0</p>
-                </div>
 
-                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-purple-800 font-semibold text-xl">Current Position</h3>
-                        <div class="bg-purple-100 p-2 rounded-full">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                            </svg>
-                        </div>
+                    <!-- Motion Status -->
+                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
+                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Motion Status</h3>
+                        <p id="motion-status" class="status-value text-2xl font-bold text-purple-900">Still</p>
                     </div>
-                    <p class="text-4xl font-bold text-purple-900" id="position">Up</p>
-                </div>
 
-                <div class="stats-card rounded-xl p-6 shadow-lg border border-purple-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-purple-800 font-semibold text-xl">Form Quality</h3>
-                        <div class="bg-purple-100 p-2 rounded-full">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
+                    <!-- Form Quality -->
+                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
+                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Form Quality</h3>
+                        <p id="form-quality" class="status-value text-2xl font-bold text-purple-900">Good</p>
                     </div>
-                    <p class="text-4xl font-bold text-purple-900" id="form-quality">Good</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function updateStats() {
-            fetch('/get_stats')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('pushup-count').textContent = data.count;
-                    document.getElementById('position').textContent = 
-                        data.position.charAt(0).toUpperCase() + data.position.slice(1);
-                    document.getElementById('form-quality').textContent = data.form;
-                    
-                    // Add animation class when count changes
-                    if (data.count !== parseInt(document.getElementById('pushup-count').textContent)) {
-                        document.getElementById('pushup-count').classList.add('scale-110');
-                        setTimeout(() => {
-                            document.getElementById('pushup-count').classList.remove('scale-110');
-                        }, 200);
-                    }
-                });
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        let updateInterval = null;
+
+        startBtn.addEventListener('click', async () => {
+            const response = await fetch('/start_detection');
+            if (response.ok) {
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                startBtn.classList.add('opacity-50');
+                stopBtn.classList.remove('opacity-50');
+                if (!updateInterval) {
+                    updateInterval = setInterval(updateStatus, 200);
+                }
+            }
+        });
+
+        stopBtn.addEventListener('click', async () => {
+            const response = await fetch('/stop_detection');
+            if (response.ok) {
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                startBtn.classList.remove('opacity-50');
+                stopBtn.classList.add('opacity-50');
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+            }
+        });
+
+        function updateStatus() {
+            const videoImage = document.querySelector('img.video-feed');
+            if (videoImage) {
+                // Update Exercise
+                const exerciseMatch = videoImage.src.match(/Exercise: ([^,]+)/);
+                if (exerciseMatch && exerciseMatch[1]) {
+                    const exercise = exerciseMatch[1].trim();
+                    document.getElementById('current-exercise').textContent = exercise;
+                }
+
+                // Update Motion
+                const motionMatch = videoImage.src.match(/Motion: ([^,]+)/);
+                if (motionMatch && motionMatch[1]) {
+                    const motion = motionMatch[1].trim();
+                    const motionElement = document.getElementById('motion-status');
+                    motionElement.textContent = motion;
+                    motionElement.style.color = motion === 'Moving' ? '#059669' : '#6B7280';
+                }
+
+                // Update Form Quality
+                const formMatch = videoImage.src.match(/Form: ([^,]+)/);
+                if (formMatch && formMatch[1]) {
+                    const formQuality = formMatch[1].trim();
+                    document.getElementById('form-quality').textContent = formQuality;
+                }
+            }
         }
 
-        // Update stats every 200ms for smooth real-time updates
-        setInterval(updateStats, 200);
+        // Initialize buttons state
+        stopBtn.disabled = true;
+        stopBtn.classList.add('opacity-50');
     </script>
 </body>
 </html>
