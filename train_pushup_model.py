@@ -5,6 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 
+
 class MultiExerciseModel:
     def __init__(self):
         self.model = self._build_model()
@@ -42,11 +43,19 @@ class MultiExerciseModel:
         return model
 
     def train(self, train_generator, validation_generator, epochs=50):
-        # Add callbacks for better training
+        # Create models directory if it doesn't exist
+        os.makedirs('models', exist_ok=True)
+
+        # Modified callbacks with proper file path
+        model_path = os.path.join('models', 'exercise_model.keras')
         callbacks = [
-            tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True),
             tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3),
-            tf.keras.callbacks.ModelCheckpoint('exercise_model.h5', monitor='val_accuracy', save_best_only=True)
+            tf.keras.callbacks.ModelCheckpoint(
+                model_path,
+                monitor='val_accuracy',
+                save_best_only=True,
+                save_weights_only=False
+            )
         ]
 
         # Train the model
@@ -59,8 +68,14 @@ class MultiExerciseModel:
 
         return history
 
-    def save_model(self, filename='exercise_model.h5'):
-        self.model.save(filename)
+    def save_model(self, filename='exercise_model.keras'):
+        # Create models directory if it doesn't exist
+        os.makedirs('models', exist_ok=True)
+
+        # Save model in the models directory
+        model_path = os.path.join('models', filename)
+        self.model.save(model_path)
+        print(f"Model saved to: {model_path}")
 
 
 class DataPreprocessor:
@@ -102,6 +117,11 @@ class DataPreprocessor:
 
 
 def main():
+    # Enable memory growth for GPU if available
+    physical_devices = tf.config.list_physical_devices('GPU')
+    if len(physical_devices) > 0:
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
     # Step 1: Preprocess the data
     print("Preparing data generators...")
     preprocessor = DataPreprocessor()
@@ -114,7 +134,7 @@ def main():
 
     # Step 3: Save the trained model
     model.save_model()
-    print("\nTraining completed! Model saved as 'exercise_model.h5'")
+    print("\nTraining completed!")
 
 
 if __name__ == "__main__":

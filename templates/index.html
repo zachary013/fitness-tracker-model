@@ -63,29 +63,6 @@
             <div class="rounded-2xl overflow-hidden bg-white shadow-lg border-2 border-purple-100 mb-6">
                 <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Exercise Detection Feed">
             </div>
-
-            <!-- Status Bar -->
-            <div class="status-card rounded-xl p-6 shadow-lg border border-purple-200 bg-white">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Current Exercise Status -->
-                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
-                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Current Exercise</h3>
-                        <p id="current-exercise" class="status-value text-2xl font-bold text-purple-900">None</p>
-                    </div>
-
-                    <!-- Motion Status -->
-                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
-                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Motion Status</h3>
-                        <p id="motion-status" class="status-value text-2xl font-bold text-purple-900">Still</p>
-                    </div>
-
-                    <!-- Form Quality -->
-                    <div class="text-center p-4 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors">
-                        <h3 class="status-label text-sm uppercase tracking-wide mb-2">Form Quality</h3>
-                        <p id="form-quality" class="status-value text-2xl font-bold text-purple-900">Good</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -120,35 +97,6 @@
                 }
             }
         });
-
-        function updateStatus() {
-            const videoImage = document.querySelector('img.video-feed');
-            if (videoImage) {
-                // Update Exercise
-                const exerciseMatch = videoImage.src.match(/Exercise: ([^,]+)/);
-                if (exerciseMatch && exerciseMatch[1]) {
-                    const exercise = exerciseMatch[1].trim();
-                    document.getElementById('current-exercise').textContent = exercise;
-                }
-
-                // Update Motion
-                const motionMatch = videoImage.src.match(/Motion: ([^,]+)/);
-                if (motionMatch && motionMatch[1]) {
-                    const motion = motionMatch[1].trim();
-                    const motionElement = document.getElementById('motion-status');
-                    motionElement.textContent = motion;
-                    motionElement.style.color = motion === 'Moving' ? '#059669' : '#6B7280';
-                }
-
-                // Update Form Quality
-                const formMatch = videoImage.src.match(/Form: ([^,]+)/);
-                if (formMatch && formMatch[1]) {
-                    const formQuality = formMatch[1].trim();
-                    document.getElementById('form-quality').textContent = formQuality;
-                }
-            }
-        }
-
         // Initialize buttons state
         stopBtn.disabled = true;
         stopBtn.classList.add('opacity-50');
