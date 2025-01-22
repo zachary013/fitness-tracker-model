@@ -115,7 +115,6 @@ class DataPreprocessor:
 
         return train_generator, validation_generator
 
-
 def main():
     # Enable memory growth for GPU if available
     physical_devices = tf.config.list_physical_devices('GPU')
