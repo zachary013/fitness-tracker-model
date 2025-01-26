@@ -98,7 +98,7 @@ paho-mqtt
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/fitness-tracker-ai.git
+git clone https://github.com/zachary013/fitness-tracker-model.git
 cd fitness-tracker-ai
 ```
 
